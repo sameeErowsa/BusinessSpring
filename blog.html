@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Blog</title>
+    <style>
+        /* Global Variables */
+        :root {
+            --primary-color: #34495e;
+            --accent-color: #e67e22;
+            --text-color: #333;
+            --light-bg: #f5f5f5;
+            --border-color: #ddd;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+            --container-max-width: 1200px;
+            --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+        }
+        
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        a:hover {
+            color: #d35400;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Layout Components */
+        .container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 992px) {
+            .grid {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+        
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+        }
+        
+        .header__container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header__logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .header__nav {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .header__nav {
+                display: flex;
+            }
+        }
+        
+        .header__nav-list {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        .header__nav-link {
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .header__nav-link:hover {
+            color: var(--accent-color);
+        }
+        
+        .header__nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: var(--transition);
+        }
+        
+        .header__nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .header__mobile-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+        
+        @media (min-width: 768px) {
+            .header__mobile-toggle {
+                display: none;
+            }
+        }
+        
+        /* Hero Section */
+        .hero {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .hero__title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .hero__subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        /* Main Content */
+        .main {
+            padding: 40px 0;
+        }
+        
+        /* Blog Post List */
+        .post-list {
+            display: grid;
+            gap: 30px;
+        }
+        
+        /* Blog Post Card */
+        .post-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+        
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .post-card__image {
+            height: 200px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .post-card__content {
+            padding: 20px;
+        }
+        
+        .post-card__date {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .post-card__title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .post-card__excerpt {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .post-card__read-more {
+            display: inline-block;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        
+        /* Single Post */
+        .post {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .post__header {
+            margin-bottom: 20px;
+        }
+        
+        .post__title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .post__meta {
+            display: flex;
+            gap: 15px;
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .post__content {
+            line-height: 1.8;
+        }
+        
+        .post__content p,
+        .post__content ul,
+        .post__content ol,
+        .post__content blockquote {
+            margin-bottom: 20px;
+        }
+        
+        .post__content h2,
+        .post__content h3 {
+            color: var(--primary-color);
+            margin: 30px 0 15px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: calc(var(--header-height) + 20px);
+            align-self: start;
+        }
+        
+        .sidebar__widget {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .sidebar__widget-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        /* Search Widget */
+        .search-form {
+            display: flex;
+        }
+        
+        .search-form__input {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-right: none;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+        
+        .search-form__button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        /* Categories Widget */
+        .categories-list {
+            list-style: none;
+        }
+        
+        .categories-list__item {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .categories-list__item:last-child {
+            border-bottom: none;
+        }
+        
+        .categories-list__link {
+            display: block;
+            padding: 8px 0;
+            color: var(--text-color);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .categories-list__link:hover {
+            color: var(--accent-color);
+        }
+        
+        .categories-list__count {
+            background-color: var(--light-bg);
+            font-size: 0.8rem;
+            border-radius: 10px;
+            padding: 2px 8px;
+        }
+        
+        /* Popular Posts Widget */
+        .popular-posts {
+            list-style: none;
+        }
+        
+        .popular-post {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .popular-post:last-child {
+            margin-bottom: 0;
+        }
+        
+        .popular-post__image {
+            width: 70px;
+            height: 70px;
+            border-radius: 4px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .popular-post__content {
+            flex: 1;
+        }
+        
+        .popular-post__title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .popular-post__date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+        
+        /* Tags Widget */
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tags-list__item {
+            background-color: var(--light-bg);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        
+        .tags-list__item:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        /* Newsletter Widget */
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .newsletter-form__input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .newsletter-form__button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .newsletter-form__button:hover {
+            background-color: #d35400;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer__container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer__widget-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer__widget-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+        
+        .footer__links {
+            list-style: none;
+        }
+        
+        .footer__link {
+            margin-bottom: 10px;
+        }
+        
+        .footer__link a {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .footer__link a:hover {
+            color: white;
+        }
+        
+        .footer__contact-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .footer__social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .footer__social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .footer__social-link:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .footer__bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+        
+        /* Admin Area */
+        .admin-form {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        
+        textarea.form-control {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .form-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .form-button:hover {
+            background-color: #d35400;
+        }
+        
+        /* Utils */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Component -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="#" class="header__logo">Architecture Blog</a>
+            
+            <nav class="header__nav">
+                <ul class="header__nav-list">
+                    <li><a href="#" class="header__nav-link">Home</a></li>
+                    <li><a href="#" class="header__nav-link">Posts</a></li>
+                    <li><a href="#" class="header__nav-link">Categories</a></li>
+                    <li><a href="#" class="header__nav-link">About</a></li>
+                    <li><a href="#" class="header__nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <button class="header__mobile-toggle">☰</button>
+        </div>
+    </header>
+    
+    <!-- Hero Component -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero__title">Architecture Blog</h1>
+            <p class="hero__subtitle">Exploring the beauty and functionality of architectural design across the world</p>
+        </div>
+    </section>
+    
+    <!-- Main Content Area -->
+    <main class="main">
+        <div class="container">
+            <div class="grid">
+                <!-- Posts Column -->
+                <div class="post-list">
+                    <!-- Sample Post Cards -->
+                    <article class="post-card">
+                        <div class="post-card__image" style="background-image: url('https://via.placeholder.com/800x400');"></div>
+                        <div class="post-card__content">
+                            <span class="post-card__date">May 6, 2025</span>
+                            <h2 class="post-card__title">Modern Architecture Trends in 2025</h2>
+                            <p class="post-card__excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                            <a href="#" class="post-card__read-more">Read More</a>
+                        </div>
+                    </article>
+                    
+                    <article class="post-card">
+                        <div class="post-card__image" style="background-image: url('https://via.placeholder.com/800x400');"></div>
+                        <div class="post-card__content">
+                            <span class="post-card__date">May 4, 2025</span>
+                            <h2 class="post-card__title">Sustainable Building Materials of the Future</h2>
+                            <p class="post-card__excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                            <a href="#" class="post-card__read-more">Read More</a>
+                        </div>
+                    </article>
+                    
+                    <article class="post-card">
+                        <div class="post-card__image" style="background-image: url('https://via.placeholder.com/800x400');"></div>
+                        <div class="post-card__content">
+                            <span class="post-card__date">May 1, 2025</span>
+                            <h2 class="post-card__title">Historic Preservation in Urban Development</h2>
+                            <p class="post-card__excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+                            <a href="#" class="post-card__read-more">Read More</a>
+                        </div>
+                    </article>
+                </div>
+                
+                <!-- Sidebar Column -->
+                <aside class="sidebar">
+                    <!-- Search Widget -->
+                    <div class="sidebar__widget">
+                        <h3 class="sidebar__widget-title">Search</h3>
+                        <form class="search-form">
+                            <input type="text" class="search-form__input" placeholder="Search...">
+                            <button type="submit" class="search-form__button">🔍</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Categories Widget -->
+                    <div class="sidebar__widget">
+                        <h3 class="sidebar__widget-title">Categories</h3>
+                        <ul class="categories-list">
+                            <li class="categories-list__item">
+                                <a href="#" class="categories-list__link">
+                                    <span>Modern Design</span>
+                                    <span class="categories-list__count">12</span>
+                                </a>
+                            </li>
+                            <li class="categories-list__item">
+                                <a href="#" class="categories-list__link">
+                                    <span>Sustainability</span>
+                                    <span class="categories-list__count">8</span>
+                                </a>
+                            </li>
+                            <li class="categories-list__item">
+                                <a href="#" class="categories-list__link">
+                                    <span>Urban Planning</span>
+                                    <span class="categories-list__count">6</span>
+                                </a>
+                            </li>
+                            <li class="categories-list__item">
+                                <a href="#" class="categories-list__link">
+                                    <span>Historic Buildings</span>
+                                    <span class="categories-list__count">4</span>
+                                </a>
+                            </li>
+                            <li class="categories-list__item">
+                                <a href="#" class="categories-list__link">
+                                    <span>Interior Design</span>
+                                    <span class="categories-list__count">9</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Popular Posts Widget -->
+                    <div class="sidebar__widget">
+                        <h3 class="sidebar__widget-title">Popular Posts</h3>
+                        <ul class="popular-posts">
+                            <li class="popular-post">
+                                <div class="popular-post__image" style="background-image: url('https://via.placeholder.com/70');"></div>
+                                <div class="popular-post__content">
+                                    <h4 class="popular-post__title">The Future of Urban Living</h4>
+                                    <span class="popular-post__date">April 28, 2025</span>
+                                </div>
+                            </li>
+                            <li class="popular-post">
+                                <div class="popular-post__image" style="background-image: url('https://via.placeholder.com/70');"></div>
+                                <div class="popular-post__content">
+                                    <h4 class="popular-post__title">Minimalism in Modern Homes</h4>
+                                    <span class="popular-post__date">April 20, 2025</span>
+                                </div>
+                            </li>
+                            <li class="popular-post">
+                                <div class="popular-post__image" style="background-image: url('https://via.placeholder.com/70');"></div>
+                                <div class="popular-post__content">
+                                    <h4 class="popular-post__title">Green Roofs: Benefits and Challenges</h4>
+                                    <span class="popular-post__date">April 15, 2025</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tags Cloud Widget -->
+                    <div class="sidebar__widget">
+                        <h3 class="sidebar__widget-title">Tags</h3>
+                        <div class="tags-list">
+                            <a href="#" class="tags-list__item">Architecture</a>
+                            <a href="#" class="tags-list__item">Design</a>
+                            <a href="#" class="tags-list__item">Modern</a>
+                            <a href="#" class="tags-list__item">Sustainable</a>
+                            <a href="#" class="tags-list__item">Urban</a>
+                            <a href="#" class="tags-list__item">Green</a>
+                            <a href="#" class="tags-list__item">Minimalist</a>
+                            <a href="#" class="tags-list__item">Historic</a>
+                            <a href="#" class="tags-list__item">Innovation</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Newsletter Widget -->
+                    <div class="sidebar__widget">
+                        <h3 class="sidebar__widget-title">Newsletter</h3>
+                        <p>Subscribe to our newsletter for the latest updates.</p>
+                        <form class="newsletter-form">
+                            <input type="email" class="newsletter-form__input" placeholder="Your email address">
+                            <button type="submit" class="newsletter-form__button">Subscribe</button>
+                        </form>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Admin Section (Hidden by default) -->
+    <div class="admin-form" style="display: none;">
+        <h2>Create New Post</h2>
+        <form id="post-form">
+            <div class="form-group">
+                <label for="post-title" class="form-label">Title</label>
+                <input type="text" id="post-title" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="post-excerpt" class="form-label">Excerpt</label>
+                <textarea id="post-excerpt" class="form-control" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="post-content" class="form-label">Content</label>
+                <textarea id="post-content" class="form-control" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="post-category" class="form-label">Category</label>
+                <select id="post-category" class="form-control">
+                    <option value="modern-design">Modern Design</option>
+                    <option value="sustainability">Sustainability</option>
+                    <option value="urban-planning">Urban Planning</option>
+                    <option value="historic-buildings">Historic Buildings</option>
+                    <option value="interior-design">Interior Design</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="post-tags" class="form-label">Tags (comma separated)</label>
+                <input type="text" id="post-tags" class="form-control">
+            </div>
+            
+            <button type="submit" class="form-button">Publish Post</button>
+        </form>
+    </div>
+    
+    <!-- Footer Component -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__container">
+                <div class="footer__widget">
+                    <h3 class="footer__widget-title">About Us</h3>
+                    <p>Architecture Blog is dedicated to exploring and sharing the best architectural designs, trends, and innovations from around the world.</p>
+                    <div class="footer__social">
+                        <a href="#" class="footer__social-link">f</a>
+                        <a href="#" class="footer__social-link">t</a>
+                        <a href="#" class="footer__social-link">in</a>
+                        <a href="#" class="footer__social-link">p</a>
+                    </div>
+                </div>
+                
+                <div class="footer__widget">
+                    <h3 class="footer__widget-title">Quick Links</h3>
+                    <ul class="footer__links">
+                        <li class="footer__link"><a href="#">Home</a></li>
+                        <li class="footer__link"><a href="#">About</a></li>
+                        <li class="footer__link"><a href="#">Categories</a></li>
+                        <li class="footer__link"><a href="#">Contact</a></li>
+                        <li class="footer__link"><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__widget">
+                    <h3 class="footer__widget-title">Contact</h3>
+                    <div class="footer__contact-item">
+                        <span>📍</span>
+                        <span>123 Architecture St, Design City</span>
+                    </div>
+                    <div class="footer__contact-item">
+                        <span>✉️</span>
+                        <span>info@architectureblog.com</span>
+                    </div>
+                    <div class="footer__contact-item">
+                        <span>📞</span>
+                        <span>+1 (555) 123-4567</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer__bottom">
+                <p>&copy; 2025 Architecture Blog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileToggle = document.querySelector('.header__mobile-toggle');
+            const headerNav = document.querySelector('.header__nav');
+            
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function() {
+                    headerNav.style.display = headerNav.style.display === 'flex' ? 'none' : 'flex';
+                });
+            }
+            
+            // Admin form toggle (for demonstration)
+            const adminLink = document.querySelector('.header__nav-link[href="#"]');
+            const adminForm = document.querySelector('.admin-form');
+            
+            if (adminLink && adminForm) {
+                adminLink.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    adminForm.style.display = adminForm.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+            
+            // Post form submission (for demonstration)
+            const postForm = document.getElementById('post-form');
+            
+            if (postForm) {
+                postForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // In a real application, you would save the post data to a database
+                    // For demonstration, we'll just log the data to the console
+                    console.log({
+                        title: document.getElementById('post-title').value,
+                        excerpt: document.getElementById('post-excerpt').value,
+                        content: document.getElementById('post-content').value,
+                        category: document.getElementById('post-category').value,
+                        tags: document.getElementById('post-tags').value.split(',').map(tag => tag.trim())
+                    });
+                    
+                    // Clear the form
+                    this.reset();
+                    
+                    // Hide the admin form
+                    adminForm.style.display = 'none';
+                    
+                    // Show a success message (in a real app)
+                    alert('Post created successfully!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
